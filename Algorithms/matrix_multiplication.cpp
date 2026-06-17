@@ -32,16 +32,3 @@ void matmul(span<const ll> A,span<const ll> B, span<ll> C, int n, int m, int p) 
 
 void matmul(span<const ll> A,span<const ll> B, span<ll> C, int n, int m, int p, int lda, int ldb, int ldc) {}
 
-
-struct Matrix {
-    int n, m;
-    vector<ll> data;
-    Matrix(int n, int m) : n(n), m(m), data(n * m) {}
-    ll* operator[] (int i) { return &data[i * m];}
-    const ll* operator[] (int i) const { return &data[i * m]; }
-    Matrix operator*(const Matrix& other) const { 
-        Matrix res(n, other.m);
-        matmul(data, other.data, res.data, n, m, other.m);
-        return res;    
-    }
-};
