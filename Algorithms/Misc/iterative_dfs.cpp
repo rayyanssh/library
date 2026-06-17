@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 typedef struct T {
     int data;
     struct T* left;
     struct T* right;
 } T;
+
 void inorder(T* tree, int h) {
     T* stack[h]; int top = -1;
     while (top != -1 || tree != NULL) {
@@ -17,6 +19,7 @@ void inorder(T* tree, int h) {
         tree = tree->right;
     }
 }
+
 void postorder(T* tree, int h) {
     T* stack[h]; int top = -1; T* prev = NULL;
     while (top != -1 || tree != NULL) {

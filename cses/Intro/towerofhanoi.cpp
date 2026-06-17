@@ -20,7 +20,11 @@ void towerofhanoi_iterative(int n) {
         //cout << A << " " << B << " " << C << " " << n << '\n';
     }
 }
-
+void towerofhanoi(int n, int A, int B, int C) {
+    if (n == 0) return;
+    towerofhanoi(n-1, A, C, B);
+    towerofhanoi(n-1, B, A, C);
+}
 void solve() {
     int n;
     cin >> n;

@@ -1,20 +1,22 @@
 #pragma once
 #include <bits/stdc++.h>
-#include "extended_gcd.h"
+#include "extended_gcd.cpp"
 using namespace std;
 using ll = long long;
 using i128 = __int128;
-// x === a (mod m)
-struct Congruence {ll a, m;};
 
+// x === a (mod m)
+struct Congruence { ll a, m; };
+
+// x === a (mod m) where gcd(m_i, m_j) == 1 for all i, j.
 template <typename T>
 ll crt(const vector<T>& congruences) {
-    __int128 x = 0;
+    i128 x = 0;
     ll prod = 1;
-    for (auto const& [a, m] : congruences) prod *= m;
-    for (auto const& [a, m] : congruences) {
+    for (auto [a, m] : congruences) prod *= m;
+    for (auto [a, m] : congruences) {
         ll M = prod/m;
-        ll N = mod_inv(M, m);
+        ll N = modinv(M, m);
         x = x + (i128)a * M * N;
     }
     x = (x % prod + prod) % prod;
@@ -29,10 +31,12 @@ ll general_crt(vector<T>& congruences) {
         auto [b, n] = congruences.back(); congruences.pop_back();
         ll g = gcd(m, n);
         if (a % g != b % g) return -1; // no solution
-        ll M = mod_inv(m/g, n/g);
+        ll M = modinv(m/g, n/g);
         ll lcm = m/g * n;
-        ll x = ((a + (i128)M * m/g * (b - a)) % lcm + lcm) % lcm;
+        ll x = a + (i128)M * m/g * (b - a);
+        x = (x % lcm + lcm) % lcm;
         congruences.push_back({x, lcm});
     }
-    return congruences.front().first;
+    auto [x, m] = congruences[0];
+    return x;
 }
