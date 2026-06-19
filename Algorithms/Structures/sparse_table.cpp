@@ -10,7 +10,8 @@ inline int log2_floor(u64 n) {
     return bit_width(n) - 1;
 }
 
-void build_sparse_table(span<ll> nums, auto& S, auto f) {
+template <typename T>
+void build_sparse_table(span<const T> nums, auto& S, auto f) {
     int n = nums.size();  
     for (int j = 1; j < log2_floor(n); j++) {
         for (int i = 0; i + (1 << j) <= n; i++) {
@@ -19,15 +20,20 @@ void build_sparse_table(span<ll> nums, auto& S, auto f) {
     }
 }
 
-template<typename T>
+template<typename T, typename F>
 struct SparseTable {
     int n;
     Grid<T> st;  
-    void build(span<ll> nums, auto f) {
+    F f;
+    SparseTable() = default;
+    SparseTable(span<T> nums, F f) {
+        
+    }
+    void build(span<T> nums) {
         n = nums.size();
         st = Grid<T>(log2_floor(n), n);
         for (int i = 0; i < n; i++) st[0][i] = nums[i];
         build_sparse_table(nums, st, f);
     }
     
-}
+};
