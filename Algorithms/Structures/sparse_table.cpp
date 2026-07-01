@@ -5,7 +5,7 @@
 
 using namespace std;
 
-// Builds a sparse table from input nums of size n, into a 2D mdspan table, using f. The table must be preallocated with size k x n, where k = bit_width(n). 
+// Builds a sparse table from input nums of size n, into a 2D table, using f. The table must be preallocated with size k x n, where k = bit_width(n). 
 void build_sparse_table(const auto& nums, auto& table, auto f) {
     int n = size(nums); 
     int k = bit_width((unsigned int)n) - 1; 
@@ -24,19 +24,19 @@ auto query_sparse_table(int a, int b, auto& table, auto f) {
     return f(table[k, a], table[k, b - w + 1]);
 }
 
-template<typename T, typename F>
+template<typename T, typename F, typename Storage = vector<T>, typename Table = mdspan<T, dextents<size_t, 2>>>
 struct SparseTable {
     int n, k;
     F f;
-    vector<T> container;
-    mdspan<T, dextents<size_t, 2>> table;
-
+    Storage container;
+    Table table;
+    SparseTable(F func = F{}) : f(func) {}
     void build(const auto& nums) {
         n = size(nums);
         k = bit_width((unsigned int)n) - 1;
         container.resize((k + 1) * n);
-        table = mdspan(container.data(), k + 1, n);
-        build_sparse_table(nums, table, f);
+        table = Table(container.data(), k + 1, n);
+        build_sparse_table(nums, table, f)\
     }
     
     T query(int a, int b) {
@@ -47,11 +47,18 @@ struct SparseTable {
 
 // Example usage 
 /* 
-vector<int> nums = {1,3,5,7,9,4,8,2}; 
-vector<int> store(4 * 8); 
-mdspan S(store.data(), 4, 8);
-build_sparse_table(nums, S, ranges::min); // works
-struct min_functor { int operator()(int a, int b) { return min(a, b); } };
-SparseTable<int, min_functor> st; st.build(nums); // works 
+#include <iostream>
+int main() {
+    vector<int> nums = {1,3,5,7,9,4,8,2}; 
+    vector<int> store(4 * 8); 
+    mdspan S(store.data(), 4, 8);
+    build_sparse_table(nums, S, ranges::min); // works
+    struct min_functor { int operator()(int a, int b) { return min(a, b); } };
+    SparseTable<int, min_functor> st; st.build(nums); // works 
+    cout << st.query(1, 5) << endl; // should output 3
+
+    auto Min = [](int a, int b) { return min(a, b); };
+    SparseTable<int, decltype(Min)> st2(Min); st2.build(nums); // works
+    cout << st2.query(1, 5) << endl; // should output 3
 */
 
