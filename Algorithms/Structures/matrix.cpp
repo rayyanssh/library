@@ -14,11 +14,15 @@ struct Matrix {
 };
 
 template<typename T>
-struct SubMatrix {
+struct MatrixView {
     T* data;
     int rows, cols, stride;
-    SubMatrix(T* d, int n, int m, int s) : data(d), rows(n), cols(m), stride(s) {}
-    SubMatrix(Matrix<T>& M, int r, int c, int n, int m) : data(M.data() + r * M.cols() + c), rows(n), cols(m), stride(M.cols) {}
+    MatrixView() = default;
+    MatrixView(T* d, int n, int m) : data(d), rows(n), cols(m), stride(m) {}
+
+    MatrixView(T* d, int n, int m, int s) : data(d), rows(n), cols(m), stride(s) {}
+    MatrixView(Matrix<T>& M, int r, int c, int n, int m) : data(M.data() + r * M.cols() + c), rows(n), cols(m), stride(M.cols) {}
     T& operator[](int i, int j) { return data[i * stride + j]; }
     const T& operator[](int i, int j) const { return data[i * stride + j]; }
 };
+ 

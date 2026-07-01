@@ -1,6 +1,6 @@
 #include <vector>
 #include <span>
-#include <mdspan>
+#include "matrix.cpp"
 #include <bit>
 
 using namespace std;
@@ -24,19 +24,17 @@ auto query_sparse_table(int a, int b, auto& table, auto f) {
     return f(table[k, a], table[k, b - w + 1]);
 }
 
-template<typename T, typename F, typename Storage = vector<T>, typename Table = mdspan<T, dextents<size_t, 2>>>
+template<typename T, typename F, typename Table = Matrix<T>>
 struct SparseTable {
     int n, k;
     F f;
-    Storage container;
     Table table;
     SparseTable(F func = F{}) : f(func) {}
     void build(const auto& nums) {
         n = size(nums);
-        k = bit_width((unsigned int)n) - 1;
-        container.resize((k + 1) * n);
-        table = Table(container.data(), k + 1, n);
-        build_sparse_table(nums, table, f)\
+        k = bit_width((unsigned int)n); // log2(n) + 1
+        table = Table(k, n);
+        build_sparse_table(nums, table, f);
     }
     
     T query(int a, int b) {
